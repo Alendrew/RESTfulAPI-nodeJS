@@ -3,6 +3,31 @@ const Order = require("./Order");
 const db = require("../../config/dbconfig");
 require("../../config/associations");
 
+const getOrderById = async (req, res) => {
+  try {
+    const id = parseInt(req.params.id);
+    const order = await Order.findByPk(id, {
+      include: [
+        {
+          model: Item,
+          attributes: ["product_id", "price", "quantity", "subTotal"],
+          as: "items",
+        },
+      ],
+    });
+    const subTotalSum = order.items.reduce(
+      (acc, item) => acc + item.subTotal,
+      0
+    );
+    res.status(200).json({
+      ...order.toJSON(),
+      Total: parseFloat(subTotalSum.toFixed(2))
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ error: "Erro ao buscar pedido" });
+  }
+};
 
 const getAllOrders = async (req, res) => {
   try {
@@ -53,7 +78,7 @@ const createOrder = async (req, res) => {
               order_id: order.order_id,
               product_id,
               price,
-              quantity
+              quantity,
             },
             { transaction }
           );
@@ -77,7 +102,20 @@ const createOrder = async (req, res) => {
   }
 };
 
+const deleteOrderById = async (req, res) => {
+  try {
+    const id = parseInt(req.params.id);
+    const order = await Order.delete(id);
+    res.status(204);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ error: "Erro ao deletar pedido" });
+  }
+};
+
 module.exports = {
   getAllOrders,
   createOrder,
+  getOrderById,
+  deleteOrderById
 };

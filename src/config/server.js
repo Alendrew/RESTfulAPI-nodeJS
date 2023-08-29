@@ -29,7 +29,7 @@ app.get("/", (req, res) => {
   res.json({ message: "Hello World." });
 });
 
-app.use('/api/v1/orders', orderRoutes);
+app.use('/orders', orderRoutes);
 
 const PORT = process.env.PORT || 8080;
 app.listen(PORT, () => {

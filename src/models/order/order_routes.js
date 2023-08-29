@@ -3,7 +3,10 @@ const controller = require('./order_controller')
 
 const router = Router();
 
-router.get('/', controller.getAllOrders)
-router.post('/', controller.createOrder)
+router.get("/:id", controller.getOrderById)
+router.get("/", controller.getAllOrders)
+router.post("/", controller.createOrder)
+router.delete("/:id", controller.deleteOrder)
+
 
 module.exports = router;
