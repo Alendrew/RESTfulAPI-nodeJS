@@ -2,7 +2,7 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const cors = require("cors");
 const orderRoutes = require('../models/order/order_routes')
-const db = require('./config/dbconfig.js'); 
+const db = require('./dbconfig.js'); 
 
 const app = express();
 
@@ -17,23 +17,23 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 
-db.sync()
-  .then(() => {
-    console.log("Synced db.");
-  })
-  .catch((err) => {
-    console.log("Failed to sync db: " + err.message);
-  });
+// db.sync()
+//   .then(() => {
+//     console.log("Synced db.");
+//   })
+//   .catch((err) => {
+//     console.log("Failed to sync db: " + err.message);
+//   });
 
-  sequelize.sync({ force: true }).then(() => {
-    console.log("Drop and re-sync db.");
-  });
+//   db.sync({ force: true }).then(() => {
+//     console.log("Drop and re-sync db.");
+//   });
 
-app.get("/", (req, res) => {
-  res.json({ message: "Hello World." });
-});
+// app.get("/", (req, res) => {
+//   res.json({ message: "Hello World." });
+// });
 
-app.use('api/v1/orders', orderRoutes);
+app.use('/api/v1/orders', orderRoutes);
 
 const PORT = process.env.PORT || 8080;
 app.listen(PORT, () => {
