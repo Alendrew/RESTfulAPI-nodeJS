@@ -6,7 +6,7 @@ const router = Router();
 router.get("/:id", controller.getOrderById)
 router.get("/", controller.getAllOrders)
 router.post("/", controller.createOrder)
-router.delete("/:id", controller.deleteOrder)
+router.delete("/:id", controller.deleteOrderById)
 
 
 module.exports = router;

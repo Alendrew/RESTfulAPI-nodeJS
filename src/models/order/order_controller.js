@@ -105,7 +105,11 @@ const createOrder = async (req, res) => {
 const deleteOrderById = async (req, res) => {
   try {
     const id = parseInt(req.params.id);
-    const order = await Order.delete(id);
+    await Order.destroy({
+      where: {
+        order_id: id
+      }
+    });
     res.status(204);
   } catch (error) {
     console.log(error);
