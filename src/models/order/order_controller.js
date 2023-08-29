@@ -35,7 +35,7 @@ const getAllOrders = async (req, res) => {
       include: [
         {
           model: Item,
-          attributes: ["product_id", "price", "quantity", "subTotal"],
+          attributes: ["id","product_id", "price", "quantity", "subTotal"],
           as: "items",
         },
       ],
@@ -73,20 +73,21 @@ const createOrder = async (req, res) => {
       // Criação dos itens associados à ordem
       if (items && items.length > 0) {
         await Promise.all(
-          items.map(async ({ product_id, price, quantity }) => {
+          items.map(async (element) => {
+            const mappedItem = mapItemFields(element);
+      
+            // Use as propriedades do item mapeado para criar o novo item
             await Item.create(
               {
-                order_id: order.order_id,
-                product_id,
-                price,
-                quantity,
+                order_id: order.order_id, 
+                product_id: mappedItem.product_id,
+                price: mappedItem.price,
+                quantity: mappedItem.quantity,
               },
               { transaction }
             );
           })
-        );
-      }
-
+      )}
       // Confirma a transação se tudo estiver correto
       await transaction.commit();
 
@@ -117,6 +118,14 @@ const deleteOrderById = async (req, res) => {
     console.log(error);
     res.status(500).json({ error: "Erro ao deletar pedido" });
   }
+};
+
+const mapItemFields = (data) => {
+  return {
+    product_id: data.id_produto,
+    price: data.preco,
+    quantity: data.quantidade
+  };
 };
 
 module.exports = {
