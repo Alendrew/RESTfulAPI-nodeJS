@@ -1,5 +1,5 @@
-require('./associations')
 const db = require('./dbconfig');
+require('./associations')
 const Order = require('../models/order/Order');
 const Item = require('../models/item/Item');
 

@@ -17,21 +17,17 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 
-// db.sync()
-//   .then(() => {
-//     console.log("Synced db.");
-//   })
-//   .catch((err) => {
-//     console.log("Failed to sync db: " + err.message);
-//   });
+db.sync()
+  .then(() => {
+    console.log("Synced db.");
+  })
+  .catch((err) => {
+    console.log("Failed to sync db: " + err.message);
+  });
 
-//   db.sync({ force: true }).then(() => {
-//     console.log("Drop and re-sync db.");
-//   });
-
-// app.get("/", (req, res) => {
-//   res.json({ message: "Hello World." });
-// });
+app.get("/", (req, res) => {
+  res.json({ message: "Hello World." });
+});
 
 app.use('/api/v1/orders', orderRoutes);
 
