@@ -110,7 +110,7 @@ const deleteOrderById = async (req, res) => {
         order_id: id
       }
     });
-    res.status(204);
+    res.status(204).end();
   } catch (error) {
     console.log(error);
     res.status(500).json({ error: "Erro ao deletar pedido" });
