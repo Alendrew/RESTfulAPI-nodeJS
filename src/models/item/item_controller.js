@@ -3,12 +3,12 @@ require("../../config/associations");
 
 const createItem = async (req, res) => {
   try {
-    const { order_id, product_id, price, quantity } = req.body;
+    const mappedItem = mapItemFields(req.body);
     await Item.create({
-      order_id,
-      product_id,
-      price,
-      quantity,
+      order_id: mappedItem.order_id,
+      product_id: mappedItem.product_id,
+      price: mappedItem.price,
+      quantity: mappedItem.quantity,
     });
     res.status(201).json({ message: "Item criado com sucesso" });
   } catch (error) {
@@ -52,7 +52,7 @@ const updateItemById = async (req, res) => {
 
 const mapItemFields = (data) => {
   return {
-    order_id: id_pedido,
+    order_id: data.id_pedido,
     product_id: data.id_produto,
     price: data.preco,
     quantity: data.quantidade,
