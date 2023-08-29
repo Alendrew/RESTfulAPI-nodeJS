@@ -2,7 +2,7 @@ const Item = require("../item/Item");
 const Order = require("./Order");
 require("../../config/associations");
 
-const getOrders = async (req, res) => {
+const getAllOrders = async (req, res) => {
   try {
     const orders = await Order.findAll({
       include: [
@@ -22,8 +22,31 @@ const getOrders = async (req, res) => {
     console.log(error);
     res.status(500).json({ error: "Erro ao buscar pedidos" });
   }
-};
+}
+
+const createOrder = async (req, res) => {
+  try {
+    const { items } = req.body;
+    const order = await Order.create({
+      creation_date: new Date() 
+    });
+
+    items.map(async ({ product_id, price, quantity }) =>{
+      await Item.create({
+        order_id: order.id,
+        product_id,
+        price,
+        quantity
+      })
+    })
+    res.status(201).json({ message: 'Pedido criado com sucesso' });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ error: "Erro ao buscar pedidos" });
+  }
+}
 
 module.exports = {
-  getOrders,
+  getAllOrders,
+  createOrder,
 };
