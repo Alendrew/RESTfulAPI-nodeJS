@@ -4,6 +4,6 @@ const controller = require('./order_controller')
 const router = Router();
 
 router.get('/', controller.getAllOrders)
-router.post('/', controller.getOrders)
+router.post('/', controller.createOrder)
 
 module.exports = router;
