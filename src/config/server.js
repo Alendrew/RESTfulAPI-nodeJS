@@ -2,6 +2,7 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const cors = require("cors");
 const orderRoutes = require('../models/order/order_routes')
+const itemRoutes = require('../models/item/item_routes')
 const db = require('./dbconfig.js'); 
 
 const app = express();
@@ -30,6 +31,7 @@ app.get("/", (req, res) => {
 });
 
 app.use('/orders', orderRoutes);
+app.use('/items', itemRoutes);
 
 const PORT = process.env.PORT || 8080;
 app.listen(PORT, () => {

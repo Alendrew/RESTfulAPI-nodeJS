@@ -10,7 +10,7 @@ const getOrderById = async (req, res) => {
       include: [
         {
           model: Item,
-          attributes: ["product_id", "price", "quantity", "subTotal"],
+          attributes: ["id", "product_id", "price", "quantity", "subTotal"],
           as: "items",
         },
       ],
@@ -21,7 +21,7 @@ const getOrderById = async (req, res) => {
     );
     res.status(200).json({
       ...order.toJSON(),
-      Total: parseFloat(subTotalSum.toFixed(2))
+      Total: parseFloat(subTotalSum.toFixed(2)),
     });
   } catch (error) {
     console.log(error);
@@ -71,30 +71,32 @@ const createOrder = async (req, res) => {
       );
 
       // Criação dos itens associados à ordem
-      await Promise.all(
-        items.map(async ({ product_id, price, quantity }) => {
-          await Item.create(
-            {
-              order_id: order.order_id,
-              product_id,
-              price,
-              quantity,
-            },
-            { transaction }
-          );
-        })
-      );
+      if (items && items.length > 0) {
+        await Promise.all(
+          items.map(async ({ product_id, price, quantity }) => {
+            await Item.create(
+              {
+                order_id: order.order_id,
+                product_id,
+                price,
+                quantity,
+              },
+              { transaction }
+            );
+          })
+        );
+      }
 
       // Confirma a transação se tudo estiver correto
       await transaction.commit();
 
-      res.status(201).json({ message: "Pedido criado com sucesso" });
+      res.status(201).json({ message: "Pedido com itens criado sucesso" });
     } catch (error) {
       // Desfaz a transação em caso de erro
       await transaction.rollback();
 
       console.log(error);
-      res.status(500).json({ error: "Erro ao criar pedido e/ou itens" });
+      res.status(500).json({ error: "Erro ao criar pedido com itens" });
     }
   } catch (error) {
     console.log(error);
@@ -107,8 +109,8 @@ const deleteOrderById = async (req, res) => {
     const id = parseInt(req.params.id);
     await Order.destroy({
       where: {
-        order_id: id
-      }
+        order_id: id,
+      },
     });
     res.status(204).end();
   } catch (error) {
