@@ -1,14 +1,15 @@
 const express = require("express");
-const bodyParser = require("body-parser");
 const cors = require("cors");
-const orderRoutes = require('../models/order/order_routes')
-const itemRoutes = require('../models/item/item_routes')
-const db = require('./dbconfig.js'); 
+const orderRoutes = require("./src/models/order/order_routes");
+const itemRoutes = require("./src/models/item/item_routes");
+const db = require("./src/config/dbconfig.js");
 
 const app = express();
 
+const PORT = process.env.PORT || 8080;
+
 var corsOptions = {
-  origin: "http://localhost:8080"
+  origin: `http://localhost:${PORT}`,
 };
 
 app.use(cors(corsOptions));
@@ -16,7 +17,6 @@ app.use(cors(corsOptions));
 app.use(express.json());
 
 app.use(express.urlencoded({ extended: true }));
-
 
 db.sync()
   .then(() => {
@@ -30,10 +30,9 @@ app.get("/", (req, res) => {
   res.json({ message: "Hello World." });
 });
 
-app.use('/orders', orderRoutes);
-app.use('/items', itemRoutes);
+app.use("/orders", orderRoutes);
+app.use("/items", itemRoutes);
 
-const PORT = process.env.PORT || 8080;
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}.`);
 });
