@@ -1,7 +1,8 @@
 const express = require("express");
 const cors = require("cors");
-const orderRoutes = require("./src/models/order/order_routes");
-const itemRoutes = require("./src/models/item/item_routes");
+const swaggerUi = require('swagger-ui-express')
+const swaggerFile = require('./swagger-output.json')
+const routes = require("./src/models/routes");
 const db = require("./src/config/dbconfig.js");
 
 const app = express();
@@ -11,6 +12,8 @@ const PORT = process.env.PORT || 8080;
 var corsOptions = {
   origin: `http://localhost:${PORT}`,
 };
+
+app.use('/doc', swaggerUi.serve, swaggerUi.setup(swaggerFile))
 
 app.use(cors(corsOptions));
 
@@ -26,12 +29,7 @@ db.sync()
     console.log("Failed to sync db: " + err.message);
   });
 
-app.get("/", (req, res) => {
-  res.json({ message: "Hello World." });
-});
-
-app.use("/orders", orderRoutes);
-app.use("/items", itemRoutes);
+app.use("/", routes);
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}.`);
