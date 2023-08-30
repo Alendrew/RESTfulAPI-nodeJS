@@ -4,6 +4,10 @@ const db = require("../../config/dbconfig");
 require("../../config/associations");
 
 const getOrderById = async (req, res) => {
+  /*
+    #swagger.tags = ['Orders']
+    #swagger.parameters['id'] = { description: 'Id do pedido' }
+  */
   try {
     const id = parseInt(req.params.id);
     const order = await Order.findByPk(id, {
@@ -15,6 +19,9 @@ const getOrderById = async (req, res) => {
         },
       ],
     });
+    if (!order) {
+      return res.status(404).json({ error: "Pedido não encontrado" });
+    }
     const subTotalSum = order.items.reduce(
       (acc, item) => acc + item.subTotal,
       0
@@ -30,12 +37,13 @@ const getOrderById = async (req, res) => {
 };
 
 const getAllOrders = async (req, res) => {
+  // #swagger.tags = ['Orders']
   try {
     const orders = await Order.findAll({
       include: [
         {
           model: Item,
-          attributes: ["id","product_id", "price", "quantity", "subTotal"],
+          attributes: ["id", "product_id", "price", "quantity", "subTotal"],
           as: "items",
         },
       ],
@@ -55,14 +63,26 @@ const getAllOrders = async (req, res) => {
 };
 
 const createOrder = async (req, res) => {
+  /*
+    #swagger.tags = ['Orders']
+    #swagger.parameters['item'] = {
+      in: 'body',
+      description: 'Crie um pedido com vários itens ou nenhum item',
+      schema: [
+          {
+            id_produto: 9,
+            preco: 7.99,
+            quantidade: 2
+          }
+      ]
+    }
+  */
   try {
-    const { items } = req.body;
-
-    // Inicia uma transação
+    // Iniciando transação
     const transaction = await db.transaction();
 
     try {
-      // Criação da ordem
+      // Criando order
       const order = await Order.create(
         {
           creation_date: new Date(),
@@ -70,32 +90,35 @@ const createOrder = async (req, res) => {
         { transaction }
       );
 
-      // Criação dos itens associados à ordem
-      if (items && items.length > 0) {
-        await Promise.all(
-          items.map(async (element) => {
+      // Se o body for null ou vazio essa etapa é pulada
+      if (req.body && Array.isArray(req.body)) {
+        const promises = req.body.map(async (element) => {
+          // Verificando se a transação não foi revertida
+          if (!transaction.finished) {
             const mappedItem = mapItemFields(element);
-      
-            // Use as propriedades do item mapeado para criar o novo item
             await Item.create(
               {
-                order_id: order.order_id, 
+                order_id: order.order_id,
                 product_id: mappedItem.product_id,
                 price: mappedItem.price,
                 quantity: mappedItem.quantity,
               },
               { transaction }
             );
-          })
-      )}
-      // Confirma a transação se tudo estiver correto
+          }
+        });
+
+        await Promise.all(promises);
+      }
+      // Commita a transação se tudo estiver certo
       await transaction.commit();
 
-      res.status(201).json({ message: "Pedido com itens criado sucesso" });
+      res.status(201).json({ message: "Pedido criado com sucesso" });
     } catch (error) {
-      // Desfaz a transação em caso de erro
-      await transaction.rollback();
-
+      // Desfazendo a transação caso ocorra um erro
+      if (!transaction.finished) {
+        await transaction.rollback();
+      }
       console.log(error);
       res.status(500).json({ error: "Erro ao criar pedido com itens" });
     }
@@ -106,13 +129,20 @@ const createOrder = async (req, res) => {
 };
 
 const deleteOrderById = async (req, res) => {
+  /*
+    #swagger.tags = ['Orders']
+    #swagger.parameters['id'] = { description: 'Id do pedido' }
+  */
   try {
     const id = parseInt(req.params.id);
-    await Order.destroy({
+    const deletedCount = await Order.destroy({
       where: {
         order_id: id,
       },
     });
+    if (deletedCount === 0) {
+      return res.status(404).json({ error: "Pedido não encontrado" });
+    }
     res.status(204).end();
   } catch (error) {
     console.log(error);
@@ -124,7 +154,7 @@ const mapItemFields = (data) => {
   return {
     product_id: data.id_produto,
     price: data.preco,
-    quantity: data.quantidade
+    quantity: data.quantidade,
   };
 };
 
@@ -132,5 +162,5 @@ module.exports = {
   getAllOrders,
   createOrder,
   getOrderById,
-  deleteOrderById
+  deleteOrderById,
 };

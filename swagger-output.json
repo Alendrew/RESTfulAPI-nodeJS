@@ -13,10 +13,49 @@
   "paths": {
     "/items/": {
       "post": {
+        "tags": [
+          "Items"
+        ],
         "description": "",
+        "parameters": [
+          {
+            "name": "item",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "id_pedido": {
+                  "type": "number",
+                  "example": 1
+                },
+                "id_produto": {
+                  "type": "number",
+                  "example": 1
+                },
+                "preco": {
+                  "type": "number",
+                  "example": 29.9
+                },
+                "quantidade": {
+                  "type": "number",
+                  "example": 10
+                }
+              },
+              "required": [
+                "id_pedido",
+                "id_produto",
+                "preco",
+                "quantidade"
+              ]
+            }
+          }
+        ],
         "responses": {
           "201": {
             "description": "Created"
+          },
+          "404": {
+            "description": "Not Found"
           },
           "500": {
             "description": "Internal Server Error"
@@ -26,18 +65,25 @@
     },
     "/items/{id}": {
       "delete": {
+        "tags": [
+          "Items"
+        ],
         "description": "",
         "parameters": [
           {
             "name": "id",
             "in": "path",
             "required": true,
-            "type": "string"
+            "type": "string",
+            "description": "Id do Item"
           }
         ],
         "responses": {
           "204": {
             "description": "No Content"
+          },
+          "404": {
+            "description": "Not Found"
           },
           "500": {
             "description": "Internal Server Error"
@@ -45,13 +91,48 @@
         }
       },
       "put": {
+        "tags": [
+          "Items"
+        ],
         "description": "",
         "parameters": [
           {
             "name": "id",
             "in": "path",
             "required": true,
-            "type": "string"
+            "type": "string",
+            "description": "Id do Item"
+          },
+          {
+            "name": "item",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "id_pedido": {
+                  "type": "number",
+                  "example": 1
+                },
+                "id_produto": {
+                  "type": "number",
+                  "example": 1
+                },
+                "preco": {
+                  "type": "number",
+                  "example": 29.9
+                },
+                "quantidade": {
+                  "type": "number",
+                  "example": 10
+                }
+              },
+              "required": [
+                "id_pedido",
+                "id_produto",
+                "preco",
+                "quantidade"
+              ]
+            }
           }
         ],
         "responses": {
@@ -61,26 +142,36 @@
           "204": {
             "description": "No Content"
           },
+          "404": {
+            "description": "Not Found"
+          },
           "500": {
             "description": "Internal Server Error"
           }
         }
       }
     },
-    "/order/{id}": {
+    "/orders/{id}": {
       "get": {
+        "tags": [
+          "Orders"
+        ],
         "description": "",
         "parameters": [
           {
             "name": "id",
             "in": "path",
             "required": true,
-            "type": "string"
+            "type": "string",
+            "description": "Id do pedido"
           }
         ],
         "responses": {
           "200": {
             "description": "OK"
+          },
+          "404": {
+            "description": "Not Found"
           },
           "500": {
             "description": "Internal Server Error"
@@ -88,18 +179,25 @@
         }
       },
       "delete": {
+        "tags": [
+          "Orders"
+        ],
         "description": "",
         "parameters": [
           {
             "name": "id",
             "in": "path",
             "required": true,
-            "type": "string"
+            "type": "string",
+            "description": "Id do pedido"
           }
         ],
         "responses": {
           "204": {
             "description": "No Content"
+          },
+          "404": {
+            "description": "Not Found"
           },
           "500": {
             "description": "Internal Server Error"
@@ -107,8 +205,11 @@
         }
       }
     },
-    "/order/": {
+    "/orders/": {
       "get": {
+        "tags": [
+          "Orders"
+        ],
         "description": "",
         "responses": {
           "200": {
@@ -120,16 +221,32 @@
         }
       },
       "post": {
+        "tags": [
+          "Orders"
+        ],
         "description": "",
         "parameters": [
           {
-            "name": "body",
+            "name": "item",
             "in": "body",
+            "description": "Crie um pedido com vários itens ou nenhum item",
             "schema": {
-              "type": "object",
-              "properties": {
-                "items": {
-                  "example": "any"
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "id_produto": {
+                    "type": "number",
+                    "example": 9
+                  },
+                  "preco": {
+                    "type": "number",
+                    "example": 7.99
+                  },
+                  "quantidade": {
+                    "type": "number",
+                    "example": 2
+                  }
                 }
               }
             }

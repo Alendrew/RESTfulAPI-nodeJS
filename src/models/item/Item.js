@@ -4,6 +4,7 @@ const db = require("../../config/dbconfig");
 const Item = db.define(
   "Item",
   {
+    // Necessário para que a associação funcione
     id: {
       type: Sequelize.INTEGER,
       primaryKey: true,

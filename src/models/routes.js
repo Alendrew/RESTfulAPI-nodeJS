@@ -8,10 +8,9 @@ router.post("/items/", controller_item.createItem);
 router.delete("/items/:id", controller_item.deleteItemById);
 router.put("/items/:id",controller_item.updateItemById);
 
-
-router.get("/order/:id", controller_order.getOrderById);
-router.get("/order/", controller_order.getAllOrders);
-router.post("/order/", controller_order.createOrder);
-router.delete("/order/:id", controller_order.deleteOrderById);
+router.get("/orders/:id", controller_order.getOrderById);
+router.get("/orders/", controller_order.getAllOrders);
+router.post("/orders/", controller_order.createOrder);
+router.delete("/orders/:id", controller_order.deleteOrderById);
 
 module.exports = router;
